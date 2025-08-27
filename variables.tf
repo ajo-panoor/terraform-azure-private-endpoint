@@ -1,9 +1,9 @@
 variable "private_endpoints" {
   type = list(object({
-    name               = optional(string)
-    target_resource_id = optional(string)
-    parent_dns_zone    = optional(string)
-    subresource_names  = optional(list(string), ["postgresqlServer"])
+    name                     = optional(string)
+    target_resource_id       = optional(string)
+    parent_dns_zone          = optional(string)
+    target_subresource_names = optional(list(string), ["postgresqlServer"])
   }))
   default = []
 }
