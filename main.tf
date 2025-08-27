@@ -1,14 +1,16 @@
-output "blah" {
-  value = var.private_endpoints
-}
-
 resource "azurerm_resource_group" "rg2" {
   for_each = { for pe in var.private_endpoints : pe.name => pe }
   name     = each.value.name
-  location = "westus2"
+  location = var.location
   tags = {
     atag = each.value.name
   }
+}
+
+resource "azurerm_private_dns_zone" "dns_zone" {
+  for_each            = { for pe in var.private_endpoints : pe.name => pe }
+  name                = "${each.value.name}.${var.parent_dns_zone}"
+  resource_group_name = azurerm_resource_group.rg2.name
 }
 
 resource "azurerm_private_endpoint" "priv_endpoint" {
@@ -17,30 +19,18 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_id
+
   private_service_connection {
-    name                           = "private-serviceconnection"
+    name                           = "${each.key}-service-connection"
     private_connection_resource_id = each.value.target_resource_id
     subresource_names              = ["postgresqlServer"]
     is_manual_connection           = false
   }
-  #  location = "westus2"
-  #  resource_group_name = "blah"
-  #  location            = azurerm_resource_group.this.location
-  #  resource_group_name = azurerm_resource_group.this.name
-  #  subnet_id           = azurerm_subnet.pe.id
-  #
-  #  private_service_connection {
-  #    name                           = "${lower(replace(var.company," ","-"))}-${var.app_name}-${var.environment}-psc"
-  #    private_connection_resource_id = azurerm_postgresql_flexible_server.pe.id
-  #    subresource_names              = ["postgresqlServer"]
-  #    is_manual_connection           = false
-  #  }
-  #
-  #  private_dns_zone_group {
-  #    name                 = azurerm_postgresql_flexible_server.pe.name
-  #    private_dns_zone_ids = [data.azurerm_private_dns_zone.postgres_dns_zone.id]
-  #  }
-  #
-  #  depends_on = [ azurerm_postgresql_flexible_server.pe, azurerm_subnet.pe ]
-}
 
+  private_dns_zone_group {
+    name                 = "${each.key}-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.dns_zone.this.id]
+  }
+
+  depends_on = [azurerm_resource_group, azurerm_private_dns_zone]
+}
