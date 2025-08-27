@@ -1,7 +1,3 @@
-output "blah" {
-  value = var.private_endpoints[0].target_subresource_names
-}
-
 resource "azurerm_resource_group" "rg2" {
   for_each = { for pe in var.private_endpoints : pe.name => pe }
   name     = each.value.name
