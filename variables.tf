@@ -17,8 +17,3 @@ variable "subnet_id" {
   type        = string
   description = "Name of VNet where the Private Endpoints will be created"
 }
-
-variable "parent_dns_zone" {
-  type        = string
-  description = "The name of the Parent zone where Private DNS Zone to be created"
-}
