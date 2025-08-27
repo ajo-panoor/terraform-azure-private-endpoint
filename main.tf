@@ -17,6 +17,12 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_id
+  private_service_connection {
+    name                           = "private-serviceconnection"
+    private_connection_resource_id = each.value.name
+    subresource_names              = ["postgresqlServer"]
+    is_manual_connection           = false
+  }
   #  location = "westus2"
   #  resource_group_name = "blah"
   #  location            = azurerm_resource_group.this.location
