@@ -1,6 +1,7 @@
 output "blah" {
-  value = var.private_endpoints[0].target_resources
+  value = var.private_endpoints[0].target_subresource_names
 }
+
 resource "azurerm_resource_group" "rg2" {
   for_each = { for pe in var.private_endpoints : pe.name => pe }
   name     = each.value.name
@@ -26,7 +27,7 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
   private_service_connection {
     name                           = "${each.key}-service-connection"
     private_connection_resource_id = each.value.target_resource_id
-    subresource_names              = ["postgresqlServer"]
+    subresource_names              = each.value.target_subresource_names
     # Private Endpoint shouldn't require Manual Approval from the remote resource owner.
     is_manual_connection = false
   }
