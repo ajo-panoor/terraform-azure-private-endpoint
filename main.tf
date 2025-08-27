@@ -19,7 +19,7 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
   subnet_id           = var.subnet_id
   private_service_connection {
     name                           = "private-serviceconnection"
-    private_connection_resource_id = each.value.name
+    private_connection_resource_id = each.value.target_resource_id
     subresource_names              = ["postgresqlServer"]
     is_manual_connection           = false
   }
