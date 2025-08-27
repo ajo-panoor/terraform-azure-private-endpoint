@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "rg2" {
 resource "azurerm_private_dns_zone" "dns_zone" {
   for_each            = { for pe in var.private_endpoints : pe.name => pe }
   name                = "${each.value.name}.${var.parent_dns_zone}"
-  resource_group_name = azurerm_resource_group.rg2.name
+  resource_group_name = azurerm_resource_group.rg2[each.key].name
 }
 
 resource "azurerm_private_endpoint" "priv_endpoint" {
@@ -29,7 +29,7 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
 
   private_dns_zone_group {
     name                 = "${each.key}-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.dns_zone.this.id]
+    private_dns_zone_ids = [azurerm_private_dns_zone.dns_zone[each.key].id]
   }
 
   depends_on = [azurerm_resource_group, azurerm_private_dns_zone]
