@@ -1,16 +1,7 @@
-resource "azurerm_resource_group" "rg2" {
-  for_each = { for pe in var.private_endpoints : pe.name => pe }
-  name     = each.value.name
-  location = var.location
-  tags = {
-    atag = each.value.name
-  }
-}
-
 resource "azurerm_private_dns_zone" "dns_zone" {
   for_each            = { for pe in var.private_endpoints : pe.name => pe }
   name                = "${each.value.name}.${each.value.parent_dns_zone}"
-  resource_group_name = azurerm_resource_group.rg2[each.key].name
+  resource_group_name = var.resource_group_name
 }
 
 resource "azurerm_private_endpoint" "priv_endpoint" {
