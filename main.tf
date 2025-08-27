@@ -23,8 +23,9 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
   private_service_connection {
     name                           = "${each.key}-service-connection"
     private_connection_resource_id = each.value.target_resource_id
-    subresource_names              = ["postgresqlServer"]
-    is_manual_connection           = false
+    subresource_names              = each.value.target_subresources
+    # Private Endpoint shouldn't require Manual Approval from the remote resource owner.
+    is_manual_connection = false
   }
 
   private_dns_zone_group {
