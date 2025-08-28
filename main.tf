@@ -2,6 +2,15 @@ resource "azurerm_private_dns_zone" "dns_zone" {
   for_each            = { for pe in var.private_endpoints : pe.name => pe }
   name                = "${each.value.name}.${each.value.parent_dns_zone}"
   resource_group_name = var.resource_group_name
+  tags                = var.tags
+}
+# Create virtual network link
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
+  name                  = "${each.key}-vnet-link"
+  resource_group_name   = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.dns_zone[each.key].name
+  virtual_network_id    = var.subnet_id
+  tags                  = var.tags
 }
 
 resource "azurerm_private_endpoint" "priv_endpoint" {
@@ -10,6 +19,8 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
   location            = var.location
   resource_group_name = var.resource_group_name
   subnet_id           = var.subnet_id
+  vnet_id             = var.vnet_id
+  tags                = var.tags
 
   private_service_connection {
     name                           = "${each.key}-service-connection"

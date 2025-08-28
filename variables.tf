@@ -22,3 +22,14 @@ variable "subnet_id" {
   type        = string
   description = "Name of VNet where the Private Endpoints will be created"
 }
+
+variable "vnet_id" {
+  type        = string
+  description = "ID of VNet where the Private Endpoints will be created"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "A map of tags to assign to the resource."
+  default     = {}
+}
