@@ -1,6 +1,6 @@
 resource "azurerm_private_dns_zone" "dns_zone" {
   for_each            = { for pe in var.private_endpoints : pe.name => pe }
-  name                = "${each.value.name}.${each.value.parent_dns_zone}"
+  name                = each.value.dns_zone_name
   resource_group_name = var.resource_group_name
   tags                = var.tags
 }
