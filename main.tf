@@ -37,5 +37,5 @@ resource "azurerm_private_endpoint" "priv_endpoint" {
     private_dns_zone_ids = [azurerm_private_dns_zone.dns_zone[each.key].id]
   }
 
-  depends_on = [azurerm_private_dns_zone.dns_zone]
+  depends_on = [azurerm_private_dns_zone.dns_zone, azurerm_private_dns_zone_virtual_network_link.vnet_link]
 }
